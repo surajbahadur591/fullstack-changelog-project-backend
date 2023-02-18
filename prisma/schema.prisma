@@ -9,3 +9,54 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String    @id @default(uuid()) //primary key
+  username  String    @unique
+  Name      String
+  password  String
+  createdAt DateTime  @default(now())
+  products  Product[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  Name        String   @db.VarChar(225)
+  belongsToID String // foreign key
+  belongsTo   User     @relation(fields: [belongsToID], references: [id])
+  updates     Update[]
+}
+
+model Update {
+  id           String        @id @default(uuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime
+  title        String        @db.VarChar(225)
+  body         String
+  status       UPDATE_STATUS @default(IN_PROGRESS)
+  version      String?
+  asset        String?
+  productId    String //foreign key to product
+  productto    Product       @relation(fields: [productId], references: [id])
+  updatepoints UpdatPoints[]
+}
+
+enum UPDATE_STATUS {
+  IN_PROGRESS
+  LIVE
+  DEPRECATED
+  ARCHIVED
+}
+
+model UpdatPoints {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  name        String @db.VarChar(255)
+  description String
+
+  updateId String // foreign key
+  updateto Update @relation(fields: [updateId], references: [id])
+}
