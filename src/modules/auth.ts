@@ -1,4 +1,14 @@
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
+
+export const comparePassword = (password, hashedPassword) => {
+    return bcrypt.compare(password, hashedPassword)
+}
+
+export const hashPassword = (password) => {
+    return bcrypt.hash(password, 5)
+}
+
 
 export const createJWT = (user) => {
 
@@ -21,19 +31,22 @@ export const protector = (req, res, next) => {
         return
     }
 
-    const [ temp, token] = bearer.split(" ")
+    const [, token] = bearer.split(" ")
     if(!token) {
         res.status(401)
         res.json({
             message: "Not a valid token"
         })
+        return
         
     }
 
     try {
         const valid_user = jwt.verify(token, process.env.JWT_SECRET)
         req.user = valid_user
+        console.log(valid_user)
         next()
+        return
     }
     catch(e){
         console.log(e)

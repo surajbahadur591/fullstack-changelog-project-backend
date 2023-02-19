@@ -1,4 +1,6 @@
-import { protector } from './modules.ts/auth';
+import { signIn } from './handlers/userHandler';
+import { createNewUser } from './handlers/userHandler';
+import { protector } from './modules/auth';
 // import package here 
 import express from 'express'
 
@@ -17,11 +19,6 @@ app.use(express.urlencoded( { extended : true}))
 
 
 
-app.use( ( req, res, next) => {
-
-    req.sec = 'bosy'
-    next()
-})
 // write code here 
 app.get('/', (req, res) => {
 
@@ -34,5 +31,8 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api', protector,  router)
+
+app.post('/user', createNewUser)
+app.post('/signin', signIn)
 
 export default app 
