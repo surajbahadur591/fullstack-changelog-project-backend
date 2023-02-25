@@ -11,7 +11,7 @@ router.get('/products', getProducts) //get products details
 router.get('/product/:id', getAProdcut) // single product details
 router.post('/product', body('name').isString(), InputValidator, createProduct) // create product
 router.put('/product/:id', body('name').isString(), InputValidator, updateProduct) // update single product
-router.delete('/products/:id', deleteProduct) // delete single product
+router.delete('/product/:id', deleteProduct) // delete single product
 
 
 
