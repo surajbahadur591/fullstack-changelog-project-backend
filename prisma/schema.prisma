@@ -26,6 +26,8 @@ model Product {
   belongsToID String // foreign key
   belongsTo   User     @relation(fields: [belongsToID], references: [id])
   updates     Update[]
+
+  @@unique([id, belongsToID])
 }
 
 model Update {

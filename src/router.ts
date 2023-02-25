@@ -1,33 +1,53 @@
 import { Router } from 'express'
+import { body } from 'express-validator'
+import { createProduct, deleteProduct, getAProdcut, getProducts, updateProduct } from './handlers/productHandler'
 
+import { InputValidator } from './modules/middlewares'
 const router = Router()
 
 // All are API Routes 
 
-router.get('/products', (req, res) => {
-
-    res.status(200)
-    res.json({
-        message: "All Products"
-    })
-}) //get products details
+router.get('/products', getProducts) //get products details
+router.get('/product/:id', getAProdcut) // single product details
+router.post('/product', body('name').isString(), InputValidator, createProduct) // create product
+router.put('/product/:id', body('name').isString(), InputValidator, updateProduct) // update single product
+router.delete('/products/:id', deleteProduct) // delete single product
 
 
-router.post('/product', () => { }) // create product
-router.get('/product/:id', () => { }) // single product details
-router.put('/products/:id', () => { }) // update single product
-router.delete('/products/:id', () => { }) // delete single product
 
 router.get('/updates', () => { }) //get updates details
-router.post('/update', () => { }) // create update
 router.get('/update/:id', () => { }) // single update details
-router.put('/update/:id', () => { }) // update single update
+
+router.post('/update',
+    body('title').exists().isString(),
+    body('body').exists().isString()
+
+    , () => { }) // create update
+router.put('/update/:id',
+
+    body('title').optional,
+    body('body').optional,
+    body('version').optional,
+    body('status').isIn(['IN_PROGRESS', 'LIVE', 'DEPRECATED', 'ARCHIVED'])
+
+    , () => { }) // update single update
 router.delete('/update/:id', () => { }) // delete single update
 
 router.get('/updatepoints', () => { }) //get updates details
-router.post('/updatepoint', () => { }) // create update
 router.get('/updatepoint/:id', () => { }) // single update details
-router.put('/updatepoint/:id', () => { }) // update single update
+
+
+router.post('/updatepoint',
+    body('name').isString,
+    body('description').isString(),
+    body('updateID').exists().isString()
+    , () => { }) // create update
+
+router.put('/updatepoint/:id',
+    body('name').optional().isString,
+    body('description').optional().isString()
+
+    , () => { }) // update single update
 router.delete('/updatepoint/:id', () => { }) // delete single update
 
 
