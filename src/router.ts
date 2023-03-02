@@ -20,15 +20,15 @@ router.get('/update/:id', () => { }) // single update details
 
 router.post('/update',
     body('title').exists().isString(),
-    body('body').exists().isString()
-
+    body('body').exists().isString(),
+    body('productId').exists().isString()
     , () => { }) // create update
 router.put('/update/:id',
 
     body('title').optional,
     body('body').optional,
     body('version').optional,
-    body('status').isIn(['IN_PROGRESS', 'LIVE', 'DEPRECATED', 'ARCHIVED'])
+    body('status').isIn(['IN_PROGRESS', 'LIVE', 'DEPRECATED', 'ARCHIVED']).optional()
 
     , () => { }) // update single update
 router.delete('/update/:id', () => { }) // delete single update

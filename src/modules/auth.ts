@@ -14,7 +14,10 @@ export const hashPassword = (password) => {
 // to create jst we need username and unique id of user and a secret key 
 export const createJWT = (user) => {
     const token = jwt.sign({ id: user.id, username: user.username },
-        process.env.JWT_SECRET)
+        process.env.JWT_SECRET 
+        // , {expiresIn : "20s"}
+        )  
+
 
     return token
 
