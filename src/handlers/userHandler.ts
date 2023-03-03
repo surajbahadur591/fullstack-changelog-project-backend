@@ -7,39 +7,54 @@ import prisma from "../db";
 // function to create user - it requires prisma to initiate db conection - name, username and password is required for user creation
 // returns a jst token if user creation is success 
 
-export const createNewUser = async (req, res) => {
+export const createNewUser = async (req, res, next) => {
 
-    const user = await prisma.user.create({
-        data: {
-            name: req.body.name,
-            username: req.body.username,
-            password: await hashPassword(req.body.password)
-        }
-    })
 
-    const token = createJWT(user)
-    res.json({ token })
+    try {
+        const user = await prisma.user.create({
+            data: {
+                name: req.body.name,
+                username: req.body.username,
+                password: await hashPassword(req.body.password)
+            }
+        })
+
+        const token = createJWT(user)
+        res.json({ token })
+    }
+    catch (e) {
+        e.type = 'input'
+        next(e)
+    }
+
 }
 
 // function to sign in user - it requires prisma to initiate db conection - username and password is required for user sign in
 // returns a jst token if user sign in is success 
-export const signIn = async (req, res) => {
-    const user = await prisma.user.findUnique({
-        where: {
-            username: req.body.username
-        }
-    })
+export const signIn = async (req, res, next) => {
 
-    const isValid = await comparePassword(req.body.password, user.password)
-
-    if (!isValid) {
-        res.status(401)
-        res.json({
-            message: "Not authorized"
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                username: req.body.username
+            }
         })
-        return
+    
+        const isValid = await comparePassword(req.body.password, user.password)
+    
+        if (!isValid) {
+            res.status(401)
+            res.json({
+                message: "Not authorized"
+            })
+            return
+        }
+    
+        const token = createJWT(user)
+        res.json({ token })
+    } catch (error) {
+        error.type = 'invaliduser'
+        next(error)
     }
-
-    const token = createJWT(user)
-    res.json({ token })
+    
 }

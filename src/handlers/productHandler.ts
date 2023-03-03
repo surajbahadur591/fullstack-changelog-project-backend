@@ -1,8 +1,8 @@
 import prisma from "../db"
 
-export const createProduct = async (req, res) => {
+export const createProduct = async (req, res, next) => {
 
-
+try {
     const product = await prisma.product.create({
         data: {
             Name: req.body.name,
@@ -11,6 +11,10 @@ export const createProduct = async (req, res) => {
         }
     })
     res.json({ data: product })
+} catch (error) {
+    next(error)
+}
+    
 
 
 }
@@ -19,6 +23,8 @@ export const createProduct = async (req, res) => {
 export const getProducts = async (req, res) => {
 
     const user = await prisma.user.findUnique({
+
+        
         where: {
             id: req.user.id
         },
@@ -64,14 +70,21 @@ export const updateProduct = async (req, res) => {
 
 }
 
-export const deleteProduct = async (req, res) => {
-    const deletedProduct = await prisma.product.delete({
-        where: {
-            id_belongsToID: {
-                id: req.params.id,
-                belongsToID: req.user.id
+export const deleteProduct = async (req, res, next) => {
+    try {
+        const deletedProduct = await prisma.product.delete({
+            where: {
+                id_belongsToID: {
+                    id: req.params.id,
+                    belongsToID: req.user.id
+                }
             }
-        }
-    })
-    res.json({ data: deletedProduct })
+        })
+        res.json({ data: deletedProduct })
+        
+    } catch (error) {
+        error.type='noproduct'
+        next(error)
+    }
+    
 }

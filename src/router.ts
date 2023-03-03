@@ -10,7 +10,7 @@ const router = Router()
 
 router.get('/products', getProducts) //get products details
 router.get('/product/:id', getAProdcut) // single product details
-router.post('/product', body('name').isString(), InputValidator, createProduct) // create product
+router.post('/product', body('name').isString().isLength({ min: 3 }), InputValidator, createProduct) // create product
 router.put('/product/:id', body('name').isString(), InputValidator, updateProduct) // update single product
 router.delete('/product/:id', deleteProduct) // delete single product
 
@@ -38,5 +38,14 @@ router.put('/updatepoint/:id',
     , () => { }) // update single update
 router.delete('/updatepoint/:id', () => { }) // delete single update
 
+router.use( (err, req, res, next) => {
+    if(err.type === 'auth'){
+        res.status(401).json({message : 'unauthorized'})
+    } else if(err.type==='noproduct'){
+        res.status(400).json({ message : 'No such Product exist for this user'})
+    } else {
+        res.status(500).json({message : 'backend error'})
+    }
+})
 
 export default router

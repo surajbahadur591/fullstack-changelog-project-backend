@@ -3,11 +3,13 @@ import express from 'express'
 import router from './router'
 import morgan from 'morgan'
 import cors from 'cors'
+import { body } from 'express-validator'
 
 //user defined modules
 import { signIn } from './handlers/userHandler';
 import { createNewUser } from './handlers/userHandler';
 import { protector } from './modules/auth';
+import { InputValidator } from './modules/middlewares'
 
 const app = express()
 
@@ -36,7 +38,20 @@ app.get('/', (req, res) => {
 app.use('/api', protector, router)
 
 //unprotected routes
-app.post('/user', createNewUser)
-app.post('/signin', signIn)
+app.post('/user', body('username').isLength({ min: 5 }), body('name').isString(), body('password').isString(), InputValidator, createNewUser)
+app.post('/signin',body('username').isLength({ min: 5 }), body('password').isString(), InputValidator, signIn)
+
+app.use( (err, req, res, next) => {
+    if(err.type === 'auth'){
+        res.status(401).json({message : 'unauthorized'})
+    } else if(err.type==='input'){
+        res.status(400).json({ message : 'invalid input(username exist)'})
+    }
+    else if(err.type==='invaliduser'){
+        res.status(400).json({ message : 'No such user exists'})
+    } else {
+        res.status(500).json({message : 'backend'})
+    }
+})
 
 export default app 
