@@ -18,7 +18,7 @@ router.delete('/product/:id', deleteProduct) // delete single product
 
 router.get('/updates', getUpdates) //get updates details
 router.get('/update/:id', getSingleUpdates) // single update details
-router.post('/update', body('title').exists().isString(), body('body').exists().isString(), body('productId').exists().isString(), addUpdates) // create update
+router.post('/update', body('title').exists().isString(), body('body').isString(), body('productId').exists().isString(), addUpdates) // create update
 router.put('/update/:id', body('title').optional, body('body').optional, body('version').optional, body('status').isIn(['IN_PROGRESS', 'LIVE', 'DEPRECATED', 'ARCHIVED']).optional(), modifyUpdates) // update single update
 router.delete('/update/:id', deleteUpdates) // delete single update
 

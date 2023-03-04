@@ -2,38 +2,45 @@ import prisma from "../db"
 
 export const createProduct = async (req, res, next) => {
 
-try {
-    const product = await prisma.product.create({
-        data: {
-            Name: req.body.name,
-            belongsToID: req.user.id
+    try {
+        const product = await prisma.product.create({
+            data: {
+                Name: req.body.name,
+                belongsToID: req.user.id
 
-        }
-    })
-    res.json({ data: product })
-} catch (error) {
-    next(error)
-}
-    
+            }
+        })
+        res.json({ data: product })
+    } catch (error) {
+        next(error)
+    }
+
 
 
 }
 
 // getting all products of a particular user 
-export const getProducts = async (req, res) => {
+export const getProducts = async (req, res, next) => {
 
-    const user = await prisma.user.findUnique({
 
-        
-        where: {
-            id: req.user.id
-        },
-        include: {
-            products: true
-        }
-    })
+    try {
+        const user = await prisma.user.findUnique({
 
-    res.json({ data: user.products })
+            
+            where: {
+                id: req.user.id
+            },
+            include: {
+                products: true,
+            }
+        })
+
+        res.json({ data: user.products })
+
+    } catch (error) {
+        next(error)
+    }
+
 
 }
 
@@ -81,10 +88,10 @@ export const deleteProduct = async (req, res, next) => {
             }
         })
         res.json({ data: deletedProduct })
-        
+
     } catch (error) {
-        error.type='noproduct'
+        error.type = 'noproduct'
         next(error)
     }
-    
+
 }

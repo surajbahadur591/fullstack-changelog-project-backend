@@ -2,24 +2,27 @@ import { body } from 'express-validator';
 import { createJWT } from './../modules/auth';
 import prisma from "../db"
 
-export const getUpdates = async (req, res) => {
+export const getUpdates = async (req, res, next) => {
 
-
-    const prod = await prisma.product.findMany({
-        where: {
-            belongsToID: req.user.id
-        },
-        include: {
-            updates: true
-        }
-    })
-
-
-    const updates = prod.reduce((allup, prod) => {
-        return [...allup, ...prod.updates]
-    }, [])
-    res.json({ data: updates })
-
+    try { 
+        const prod = await prisma.product.findMany({
+            where: {
+                belongsToID: req.user.id
+            },
+            include: {
+                updates: true
+            }
+        })
+    
+    
+        const updates = prod.reduce((allup, prod) => {
+            return [...allup, ...prod.updates]
+        }, [])
+        res.json({ updates })
+    }
+    catch(e) {
+        next(e)
+    }
 }
 
 export const getSingleUpdates = async (req, res) => {
@@ -32,10 +35,10 @@ export const getSingleUpdates = async (req, res) => {
     res.json({ data: singleUpdate })
 }
 
-export const addUpdates = async (req, res) => {
+export const addUpdates = async (req, res, next) => {
 
-
-    // const {productId, ...rest} = req.body
+    try {
+        // const {productId, ...rest} = req.body
     const product = await prisma.product.findUnique({
         where: {
             id: req.body.id
@@ -56,6 +59,11 @@ export const addUpdates = async (req, res) => {
 
 
     res.json({ data: update })
+        
+    } catch (error) {
+        next(error)
+    }
+    
 }
 
 export const modifyUpdates = async (req, res) => {
