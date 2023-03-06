@@ -102,35 +102,42 @@ export const modifyUpdates = async (req, res) => {
     res.json({ data: uploadUpdate })
 }
 
-export const deleteUpdates = async (req, res) => {
-    const products = await prisma.product.findMany({
-        where: {
-            belongsToID: req.user.id,
+export const deleteUpdates = async (req, res, next) => {
 
-        },
-        include: {
-            updates: true
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                belongsToID: req.user.id,
+    
+            },
+            include: {
+                updates: true
+            }
+        })
+    
+    
+        const updates = products.reduce((allup, prod) => {
+            return [...allup, ...prod.updates]
+        }, [])
+    
+    
+        const match = updates.find(update => update.id === req.params.id)
+    
+        if (!match) {
+            res.json({ message: 'nope' })
+    
         }
-    })
-
-
-    const updates = products.reduce((allup, prod) => {
-        return [...allup, ...prod.updates]
-    }, [])
-
-
-    const match = updates.find(update => update.id === req.params.id)
-
-    if (!match) {
-        res.json({ message: 'nope' })
-
+    
+        const deleted = await prisma.update.delete({
+            where: {
+                id: req.params.id
+            }
+        })
+    
+        res.json({ data: deleted })
+        
+    } catch (error) {
+        next(error)
     }
-
-    const deleted = await prisma.update.delete({
-        where: {
-            id: req.params.id
-        }
-    })
-
-    res.json({ data: deleted })
+    
 }
