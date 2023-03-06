@@ -40,9 +40,9 @@ app.get('/', (req, res) => {
 
 })
 
-app.get('/.well-known/pki-validation/306450B808792315E53CEE32708F819E.txt', (req, res)=> {
+app.get('/.well-known/pki-validation/4674CA9D430D1E41F97A8F1FB733FB93.txt', (req, res)=> {
 
-    res.sendFile(path.join(__dirname, 'file/306450B808792315E53CEE32708F819E.txt'))
+    res.sendFile(path.join(__dirname, 'file/4674CA9D430D1E41F97A8F1FB733FB93.txt'))
 
 })
 // /api/* is protected route and only valid user can  access them
