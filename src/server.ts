@@ -4,12 +4,16 @@ import router from './router'
 import morgan from 'morgan'
 import cors from 'cors'
 import { body } from 'express-validator'
+import path from 'path'
 
 //user defined modules
 import { signIn } from './handlers/userHandler';
 import { createNewUser } from './handlers/userHandler';
 import { protector } from './modules/auth';
 import { InputValidator } from './modules/middlewares'
+
+import fs from 'fs'
+
 
 const app = express()
 
@@ -22,6 +26,7 @@ app.use(morgan('dev'))
 app.use(express.json())
 // to use useParams and url formatting support 
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public')); 
 
 
 // write code here 
@@ -32,6 +37,12 @@ app.get('/', (req, res) => {
     res.json({
         message: "Server Running"
     })
+
+})
+
+app.get('/.well-known/pki-validation/306450B808792315E53CEE32708F819E.txt', (req, res)=> {
+
+    res.sendFile(path.join(__dirname, 'file/306450B808792315E53CEE32708F819E.txt'))
 
 })
 // /api/* is protected route and only valid user can  access them
